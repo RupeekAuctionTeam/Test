@@ -408,7 +408,7 @@ form.addEventListener('submit', async (e)=>{
     data.subject=emailContent.subject;
     data.body=emailContent.body;
 
-    const response=await fetch("https://script.google.com/macros/s/AKfycbySnNXdv6GWEBgV8YL3VXnx3xAFuetfuYqMFtUfezoUZnqGvAxYHybTBDdob1-IFXZT/exec", {
+    const response=await fetch("https://script.google.com/macros/s/AKfycbxQyyAfo7cdV7VmRMNaxXiA9bEFz0WZdFpJCU6Rxw0-gjHjlc559m2rP5_qr2DpWa22/exec", {
       method:"POST",
       body:JSON.stringify(data)
     });
