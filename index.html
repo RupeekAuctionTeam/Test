@@ -2,23 +2,20 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Auction Mail Tool</title>
-
+<title>Auction Mail System</title>
 <style>
 body { font-family: Arial; padding: 20px; }
 .hidden { display: none; }
-label { font-weight: bold; margin-top: 10px; display: block; }
-input, select { width: 250px; padding: 6px; }
-button { margin-top: 15px; padding: 10px 25px; }
-#error { color: red; font-weight: bold; }
+label { font-weight: bold; }
+input, select { width: 100%; padding: 8px; margin-bottom: 10px; }
+.error { color: red; font-weight: bold; }
 </style>
-
 </head>
+
 <body>
 
-<h2>Auction Mail Tool</h2>
-
-<div id="error"></div>
+<h2>Auction Mail Sender</h2>
+<p class="error" id="errorMsg"></p>
 
 <form id="mailForm">
 
@@ -52,7 +49,7 @@ button { margin-top: 15px; padding: 10px 25px; }
 <select id="regards" required>
   <option value="">Select</option>
 
-  <!-- Direct Send With Password -->
+  <!-- DIRECT SEND WITH PASSWORD -->
   <option>Vijay</option>
   <option>Manasa</option>
   <option>Yatish</option>
@@ -62,53 +59,72 @@ button { margin-top: 15px; padding: 10px 25px; }
   <option>Prashanth</option>
   <option>Vidyadhar</option>
 
-  <!-- Approval groups -->
-  <option>Asha</option>
-  <option>Eram</option>
-  <option>Archana</option>
-  <option>Nageena</option>
-  <option>Sana</option>
-  <option>Azmath</option>
-  <option>Fouziya</option>
-  <option>Krishnaveni</option>
-  <option>Margaret</option>
+  <!-- APPROVAL GROUPS -->
+  <optgroup label="Approval Flow">
+    <option>Asha</option>
+    <option>Eram</option>
+    <option>Archana</option>
+
+    <option>Nageena</option>
+    <option>Sana</option>
+
+    <option>Azmath</option>
+
+    <option>Fouziya</option>
+    <option>Krishnaveni</option>
+    <option>Margaret</option>
+  </optgroup>
 </select>
 
-<div id="passwordSection" class="hidden">
-  <label>Password</label>
-  <input id="password" type="password">
+<div id="passwordBox" class="hidden">
+<label>Password</label>
+<input type="password" id="password">
 </div>
 
-<!-- Account details for surplus -->
 <div id="accountDetails" class="hidden">
-  <h3>Bank Details</h3>
 
-  <label>Bank Account</label>
-  <input id="bankAccount">
+<h3>Account Details (Only for Surplus Transfer)</h3>
 
-  <label>Bank Name</label>
-  <input id="bankName">
+<label>Bank Account Number</label>
+<input id="bankAccount">
 
-  <label>IFSC</label>
-  <input id="ifsc">
+<label>Bank Name</label>
+<input id="bankName">
 
-  <label>Passbook</label>
-  <input type="file" id="passbook">
+<label>IFSC</label>
+<input id="ifsc">
 
-  <label>Aadhar</label>
-  <input type="file" id="aadhar">
+<label>Passbook (image/pdf)</label>
+<input type="file" id="passbook" accept="image/*,application/pdf">
 
-  <label>PAN</label>
-  <input type="file" id="pan">
+<label>Aadhar (optional)</label>
+<input type="file" id="aadhar" accept="image/*,application/pdf">
+
+<label>PAN (optional)</label>
+<input type="file" id="pan" accept="image/*,application/pdf">
+
 </div>
 
-<button type="submit">Send Mail</button>
+<button type="submit">Send</button>
 
 </form>
 
 <script>
+// ------------ DIRECT SEND PASSWORD USERS ------------
+const directUsers = ["Vijay","Manasa","Yatish","Arif","Kartik","Rajendra","Prashanth","Vidyadhar"];
 
-// Approval groups
+const passwords = {
+  "Vijay":"F6gQ3",
+  "Manasa":"t9Bv4",
+  "Yatish":"m3Pq2",
+  "Arif":"Z5yL0",
+  "Kartik":"A7d9X",
+  "Rajendra":"R2hK8",
+  "Prashanth":"c7Nw1",
+  "Vidyadhar":"3834"
+};
+
+// ------------ APPROVAL GROUPS ------------
 const approvalMap = {
   "Asha":"arif.pasha@rupeek.com",
   "Eram":"arif.pasha@rupeek.com",
@@ -125,168 +141,139 @@ const approvalMap = {
   "Margaret":"vijay.r01@rupeek.com"
 };
 
-// Users needing password
-const directUsers = ["Vijay","Manasa","Yatish","Arif","Kartik","Rajendra","Prashanth","Vidyadhar"];
-
-// Passwords
-const passwords = {
-  "Vijay":"F6gQ3", "Manasa":"t9Bv4", "Yatish":"m3Pq2",
-  "Arif":"Z5yL0", "Kartik":"A7d9X", "Rajendra":"R2hK8",
-  "Prashanth":"c7Nw1","Vidyadhar":"3834"
-};
-
-const form = document.getElementById("mailForm");
-const regards = document.getElementById("regards");
-const passwordSection = document.getElementById("passwordSection");
-const mailType = document.getElementById("mailType");
-const accountDetails = document.getElementById("accountDetails");
-
-// Show password section only for direct users
+// ------------ SHOW / HIDE FIELDS ------------
 regards.addEventListener("change", () => {
-  if (directUsers.includes(regards.value)) {
-    passwordSection.classList.remove("hidden");
-  } else {
-    passwordSection.classList.add("hidden");
-  }
+  passwordBox.classList.toggle("hidden", !directUsers.includes(regards.value));
 });
 
-// Show bank section if surplus
+// Surplus account details
 mailType.addEventListener("change", () => {
-  if (mailType.value === "Transfer of Surplus Amount To Customer") {
-    accountDetails.classList.remove("hidden");
-  } else {
-    accountDetails.classList.add("hidden");
-  }
+  accountDetails.classList.toggle("hidden", mailType.value !== "Transfer of Surplus Amount To Customer");
 });
 
-// Convert file to base64
+// ------------ FILE TO BASE64 ------------
 function toBase64(file) {
-  return new Promise((resolve) => {
-    if (!file) return resolve("");
-    let reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(",")[1]);
+  return new Promise(res => {
+    const reader = new FileReader();
+    reader.onload = () => res(reader.result.split(",")[1]);
     reader.readAsDataURL(file);
   });
 }
 
-// Build email body
-function getEmailContent(d) {
-  let subject = "";
-  let body = `Dear Branch Staff,<br><br>`;
+// ------------ EMAIL CONTENT BUILDER ------------
+function getEmailContent(data) {
+  let subject="";
+  let body=`Dear Branch Staff,<br><br>`;
 
-  switch (d.mailType) {
+  switch(data.mailType){
     case "Packet Hold From The Auction":
-      subject = `Hold The Packet From The Auction ${d.glId}-${d.customerName}`;
-      body += "Kindly hold the packet from the auction...<br><br>";
+      subject=`Hold The Packet From The Auction ${data.glId}-${data.customerName}`;
+      body+=`Kindly hold the packet from the auction...<br><br>`;
       break;
 
     case "Packet Availability Confirmation":
-      subject = `Packet Availability Confirmation ${d.glId}-${d.customerName}`;
-      body += "Kindly confirm packet availability...<br><br>";
+      subject=`Packet Availability Confirmation ${data.glId}-${data.customerName}`;
+      body+=`Kindly confirm the packet availability...<br><br>`;
       break;
 
     case "Customer Query for Auction Details":
-      subject = `Customer Query for Auction Details ${d.glId}-${d.customerName}`;
-      body += "Customer requested auction details...<br><br>";
+      subject=`Customer Query for Auction Details ${data.glId}-${data.customerName}`;
+      body+=`Customer has requested auction details...<br><br>`;
       break;
 
     case "Customer Query For Auction Surplus":
-      subject = `Customer Query For Auction Surplus ${d.glId}-${d.customerName}`;
-      body += "Customer requested surplus details...<br><br>";
+      subject=`Customer Query For Auction Surplus ${data.glId}-${data.customerName}`;
+      body+=`Customer requested surplus details...<br><br>`;
       break;
 
     case "Transfer of Surplus Amount To Customer":
-      subject = `Transfer of Surplus Amount ${d.glId}-${d.customerName}`;
-      body += "Customer requested surplus transfer...<br><br>";
+      subject=`Transfer of Surplus Amount To Customer ${data.glId}-${data.customerName}`;
+      body+=`Customer requested surplus transfer...<br><br>`;
       break;
 
     case "Handover the DD To The Customer":
-      subject = `Handover the DD To The Customer ${d.glId}-${d.customerName}`;
-      body += "Customer requested DD handover...<br><br>";
+      subject=`Handover the DD To The Customer ${data.glId}-${data.customerName}`;
+      body+=`Please hand over DD to customer...<br><br>`;
       break;
   }
 
-  body += `
-  <br>
-  GL ID: ${d.glId}<br>
-  Customer Name: ${d.customerName}<br>
-  Customer Number: ${d.customerNumber}<br>
-  Branch: ${d.branchName}<br>
-  <br>Regards,<br>${d.regards}
-  `;
+  body+=`GL ID: ${data.glId}<br>
+         Customer: ${data.customerName}<br>
+         Number: ${data.customerNumber}<br>
+         Branch: ${data.branchName}<br><br>
+         Regards,<br>${data.regards}`;
 
-  return { subject, body };
+  return {subject, body};
 }
 
-form.addEventListener("submit", async (e) => {
+// ------------ FORM SUBMISSION ------------
+mailForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  error.textContent = "";
+  errorMsg.textContent="";
 
-  // Validate password
-  if (directUsers.includes(regards.value)) {
-    if (document.getElementById("password").value !== passwords[regards.value]) {
-      error.textContent = "Invalid password";
-      return;
-    }
-  }
-
-  let passbook = await toBase64(document.getElementById("passbook").files[0]);
-  let aadhar  = await toBase64(document.getElementById("aadhar").files[0]);
-  let pan     = await toBase64(document.getElementById("pan").files[0]);
-
-  const mapped = document.getElementById("mappedEmail").value;
-  const approval = approvalMap[regards.value];
-
-  const sendTo = directUsers.includes(regards.value)
-    ? mapped
-    : approval;
-
-  const d = {
+  const data = {
     mailType: mailType.value,
     glId: glId.value,
     customerName: customerName.value,
     customerNumber: customerNumber.value,
     branchName: branchName.value,
-    mappedEmail: mapped,
-    regards: regards.value,
-    sendTo: sendTo,
-    password: document.getElementById("password").value,
-
-    bankAccount: bankAccount.value,
-    bankName: bankName.value,
-    ifsc: ifsc.value,
-    passbook: passbook,
-    passbookType: document.getElementById("passbook").files[0]?.type || "",
-    aadhar: aadhar,
-    aadharType: document.getElementById("aadhar").files[0]?.type || "",
-    pan: pan,
-    panType: document.getElementById("pan").files[0]?.type || ""
+    mappedEmail: mappedEmail.value,
+    regards: regards.value
   };
 
-  // Add subject + body
-  const email = getEmailContent(d);
-  d.subject = email.subject;
-  d.body = email.body;
-
-  // Send to Apps Script
-  fetch("https://script.google.com/macros/s/AKfycbzCt93JFMw1HZMoREmP3GSZOun3h4T93B0kmJDtW7_bwQWEFOTeHz58GbXcSxHwZznl/exec", {
-    method: "POST",
-    body: JSON.stringify(d),
-    headers: { "Content-Type": "application/json" }
-  })
-  .then(r => r.json())
-  .then(res => {
-    if (res.status === "success") {
-      alert("Mail Sent!");
-      form.reset();
-    } else {
-      error.textContent = res.message;
+  // Password check
+  if (directUsers.includes(data.regards)) {
+    if (!password.value || passwords[data.regards] !== password.value) {
+      errorMsg.textContent="Invalid password";
+      return;
     }
-  })
-  .catch(() => error.textContent = "Failed to connect to server");
+    data.password = password.value;
+    data.toEmail = mappedEmail.value;   // Direct send
+  } else {
+    data.approvalEmail = approvalMap[data.regards];
+    data.toEmail = data.approvalEmail;  // Approval flow
+  }
 
+  // Surplus attachments
+  if (mailType.value === "Transfer of Surplus Amount To Customer") {
+    data.bankAccount = bankAccount.value;
+    data.bankName = bankName.value;
+    data.ifsc = ifsc.value;
+
+    if (!passbook.files.length) {
+      errorMsg.textContent="Passbook required";
+      return;
+    }
+
+    data.passbook = await toBase64(passbook.files[0]);
+    data.passbookType = passbook.files[0].type;
+
+    if (aadhar.files.length) {
+      data.aadhar = await toBase64(aadhar.files[0]);
+      data.aadharType = aadhar.files[0].type;
+    }
+
+    if (pan.files.length) {
+      data.pan = await toBase64(pan.files[0]);
+      data.panType = pan.files[0].type;
+    }
+  }
+
+  // Build email content
+  const email = getEmailContent(data);
+  data.subject = email.subject;
+  data.body = email.body;
+
+  // SEND to script
+  const res = await fetch("https://script.google.com/macros/s/AKfycbxojkf8vfn3zpG0fFrysb98l2Nb--7XUgB7ZmricycRoD2Go1kcAUA_AICvHIUB69Tx/exec", {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  alert("Mail sent successfully!");
 });
-
 </script>
 
 </body>
