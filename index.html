@@ -1,57 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mail Sender</title>
 <style>
-  body { font-family: Arial, sans-serif; padding: 10px; background: #f4f6f9; }
-  h2 { text-align:center; color:#333; }
+  body { 
+    font-family: Arial, sans-serif; 
+    padding: 10px; 
+    background: #f4f6f9;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #333;
+  }
   form {
     background-image: linear-gradient(to right,#ff4d00,#7d20cb);
-    padding: 20px; border-radius: 12px; max-width:720px; margin:12px auto;
-    display:grid; grid-template-columns: 1fr 1fr; gap:10px 16px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    max-width: 500px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
   }
-  label { font-weight:600; color:#faf7f7; display:block; margin-bottom:4px; }
-  input, select, button { padding:8px; border-radius:8px; font-size:13px; border:2px solid #ccc; width:100%;}
-  input:focus, select:focus { outline:none; border-color:#007bff; box-shadow:0 0 5px rgba(0,123,255,0.25); }
-  #accountDetails { grid-column:span 2; display:none; background:rgba(255,255,255,0.05); padding:12px; border-radius:8px; }
-  .error { color:#ffdddd; background:#a94442; padding:8px; border-radius:6px; grid-column:span 2; display:none; }
-  button { background:#007bff; color:#fff; border:none; cursor:pointer; grid-column:span 2; font-weight:700; }
-  button[disabled] { opacity:0.6; cursor:default; }
-  .small { font-size:12px; color:#222; }
+  label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 3px;
+    color: #faf7f7;
+  }
+  input, select, button {
+    padding: 5px;
+    width: 100%;
+    border: 3px solid #ccc;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.4);
+  }
+  .hidden { display: none !important; }
+  #accountDetails {
+    grid-column: span 2;
+    background-image: linear-gradient(to right,#ff4d00,#7d20cb);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    max-width: 500px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+  }
+  #accountDetails.visible {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+  }
+  #accountDetails h3 { 
+    margin: 0 0 0.5px 0; 
+    grid-column: span 2; 
+    color: #000000; 
+  }
+  .error { color: red; grid-column: span 2; }
+  button {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    grid-column: span 2;
+    transition: 0.3s;
+  }
+  button:hover { background: #0056b3; }
 </style>
 </head>
 <body>
-<h2>Branch Mail Sender</h2>
 
-<form id="mailForm" enctype="multipart/form-data">
+<h2>Branch Mail Sender</h2>
+<form id="mailForm">
   <div>
     <label for="mailType">Mail Type*</label>
     <select id="mailType" required>
       <option value="">Select Mail Type</option>
-      <option>Packet Hold From The Auction</option>
-      <option>Packet Availability Confirmation</option>
-      <option>Customer Query For Auction Surplus</option>
-      <option>Customer Query for Auction Details</option>
-      <option>Handover the DD To The Customer</option>
-      <option>Transfer of Surplus Amount To Customer</option>
+      <option value="Packet Hold From The Auction">Packet Hold From The Auction</option>
+      <option value="Packet Availability Confirmation">Packet Availability Confirmation</option>
+      <option value="Customer Query For Auction Surplus">Customer Query For Auction Surplus</option>
+      <option value="Customer Query for Auction Details">Customer Query for Auction Details</option>
+      <option value="Handover the DD To The Customer">Handover the DD To The Customer</option>
+      <option value="Transfer of Surplus Amount To Customer">Transfer of Surplus Amount To Customer</option>
     </select>
   </div>
 
   <div>
     <label for="glId">GL ID*</label>
-    <input id="glId" pattern="\d+" required placeholder="numbers only">
+    <input type="text" id="glId" pattern="\d+" required placeholder="Enter GL ID (numbers only)">
   </div>
 
   <div>
     <label for="customerName">Customer Name*</label>
-    <input id="customerName" pattern="[A-Za-z\s]+" required placeholder="Customer name">
+    <input type="text" id="customerName" pattern="[A-Za-z\s]+" required placeholder="Enter Customer Name">
   </div>
 
   <div>
     <label for="customerNumber">Customer Number*</label>
-    <input id="customerNumber" pattern="\d+" required placeholder="Customer phone/number">
+    <input type="text" id="customerNumber" pattern="\d+" required placeholder="Enter Customer Number">
   </div>
 
   <div>
@@ -59,159 +120,134 @@
     <input list="branchList" id="branchNameInput" required placeholder="Select or type branch">
     <datalist id="branchList">
       <option value="Test">
-      <option value="Fed - Pune / Pimple Saudagar">
+      <option value="Fed - Pune /Phursungi">
     </datalist>
   </div>
 
   <div>
     <label for="mappedEmail">Mapped Email*</label>
-    <input id="mappedEmail" type="email" readonly required placeholder="Branch mapped email">
+    <input type="email" id="mappedEmail" readonly required placeholder="Mapped Email">
   </div>
 
   <div>
     <label for="regards">Regards*</label>
     <select id="regards" required>
       <option value="">Select</option>
-      <!-- direct-send (password) group -->
-      <option>Vijay</option>
-      <option>Manasa</option>
-      <option>Yatish</option>
-      <option>Arif</option>
-      <option>Kartik</option>
-      <option>Rajendra</option>
-      <option>Prashanth</option>
-      <option>Vidyadhar</option>
-
-      <!-- approval groups -->
-      <option>Asha</option>
-      <option>Eram</option>
-      <option>Archana</option>
-
-      <option>Nageena</option>
-      <option>Sana</option>
-
-      <option>Azmath</option>
-      <option>Fouziya</option>
-      <option>Krishnaveni</option>
-      <option>Margaret</option>
+      <option value="Test">Test</option>
+      <option value="Karthik">Karthik</option>
+      <option value="Yatish">Yatish</option>
+      <option value="Arif">Arif</option>
+      <option value="Manasa">Manasa</option>
+      <option value="Vijay">Vijay</option>
+      <option value="Margaret">Margaret</option>
+      <option value="Rajendra">Rajendra</option>
+      <option value="Prashanth">Prashanth</option>
+      <option value="Vidyadhar">Vidyadhar</option>
+      <option value="Fouziya">Fouziya</option>
+      <option value="Krishnaveni">Krishnaveni</option>
+      <option value="Azmath">Azmath</option>
+      <option value="Nageena">Nageena</option>
+      <option value="Sana">Sana</option>
+      <option value="Asha">Asha</option>
+      <option value="Eram">Eram</option>
     </select>
   </div>
 
-  <div id="passwordDiv">
+  <div id="passwordContainer">
     <label for="password">Password*</label>
-    <input id="password" type="password" placeholder="Enter password (if required)">
+    <input type="password" id="password" required placeholder="Enter Password">
   </div>
 
-  <div id="accountDetails">
+  <div id="approvalEmailContainer" class="hidden">
+    <label for="approvalEmail">Approval Email*</label>
+    <select id="approvalEmail">
+      <option value="">Select Approval Email</option>
+      <option value="arif.pasha@rupeek.com">arif.pasha@rupeek.com</option>
+      <option value="yatish.r@rupeek.com">yatish.r@rupeek.com</option>
+      <option value="m.manasa@rupeek.com">m.manasa@rupeek.com</option>
+      <option value="vijay.r01@rupeek.com">vijay.r01@rupeek.com</option>
+    </select>
+  </div>
+
+  <div id="accountDetails" class="hidden">
     <label for="bankAccount">Bank A/C Number*</label>
-    <input id="bankAccount" type="text" placeholder="Account number">
+    <input type="text" id="bankAccount">
 
     <label for="bankName">Bank Name*</label>
-    <input id="bankName" type="text" placeholder="Bank name">
+    <input type="text" id="bankName">
 
     <label for="ifsc">IFSC Code*</label>
-    <input id="ifsc" type="text" placeholder="IFSC code">
+    <input type="text" id="ifsc">
 
     <label for="passbook">Passbook / Cheque Leaf*</label>
-    <input id="passbook" type="file" accept=".pdf,image/*">
+    <input type="file" id="passbook">
 
-    <label for="aadhar">Aadhar (optional)</label>
-    <input id="aadhar" type="file" accept=".pdf,image/*">
+    <label for="aadhar">Aadhar Card (optional)</label>
+    <input type="file" id="aadhar">
 
-    <label for="pan">PAN (optional)</label>
-    <input id="pan" type="file" accept=".pdf,image/*">
+    <label for="pan">Pan Card (optional)</label>
+    <input type="file" id="pan">
   </div>
 
   <div class="error" id="errorMsg"></div>
-
-  <button id="sendMailBtn" type="submit">Send Mail</button>
-  <div class="small" style="grid-column:span 2; text-align:center; margin-top:6px;">
-    After sending, approved mails are auto-forwarded to the mapped email.
-  </div>
+  <button type="submit" id="sendMailBtn">Send Mail</button>
 </form>
 
 <script>
-/* ======= CONFIG: replace with your Apps Script web app URL ======= */
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxYxY44eWjQERFi8Yos2doxqfQWH_6alN4laCcVkaheVd3exS2pXuVKscj0NVoAaN5X/exec";
-/* ================================================================ */
+const branchEmails = {"Test":"vidyadhar.patil@rupeek.com","Fed - Pune / Pimple Saudagar":"pnei@federalbank.co.in"};
 
-const branchEmails = {
-  "Test":"vidyadhar.patil@rupeek.com",
-  "Fed - Pune / Pimple Saudagar":"pnei@federalbank.co.in"
-};
+const regardsPasswords = {"Test":"August@2025","Karthik":"A7d9X","Yatish":"m3Pq2","Arif":"Z5yL0","Manasa":"t9Bv4","Rajendra":"R2hK8","Prashanth":"c7Nw1","Vijay":"F6gQ3","Margaret":"M6TQ3","Vidyadhar":"3834" };
 
-const directSendWithPassword = ["Vijay","Manasa","Yatish","Arif","Kartik","Rajendra","Prashanth","Vidyadhar"];
-const regardsPasswords = {
-  "Vijay":"F6gQ3","Manasa":"t9Bv4","Yatish":"m3Pq2","Arif":"Z5yL0","Kartik":"A7d9X",
-  "Rajendra":"R2hK8","Prashanth":"c7Nw1","Vidyadhar":"3834"
-};
+const passwordNames = ["Vijay","Manasa","Yatish","Arif","Karthik","Rajendra","Prashanth","Vidyadhar"];
+const approvalNames = ["Fouziya","Krishnaveni","Margaret","Azmath","Nageena","Sana","Asha","Eram"];
 
-const approvalEmails = {
-  "Asha":"arif.pasha@rupeek.com",
-  "Eram":"arif.pasha@rupeek.com",
-  "Archana":"arif.pasha@rupeek.com",
-  "Nageena":"yatish.r@rupeek.com",
-  "Sana":"yatish.r@rupeek.com",
-  "Azmath":"m.manasa@rupeek.com",
-  "Manasa":"m.manasa@rupeek.com",      // note: Manasa is also in direct-send group (password) — password takes precedence
-  "Fouziya":"vijay.r01@rupeek.com",
-  "Krishnaveni":"vijay.r01@rupeek.com",
-  "Margaret":"vijay.r01@rupeek.com"
-};
-
-const mailTypeEl = document.getElementById('mailType');
+const mailType = document.getElementById('mailType');
 const branchNameInput = document.getElementById('branchNameInput');
-const mappedEmailEl = document.getElementById('mappedEmail');
-const regardsEl = document.getElementById('regards');
-const passwordEl = document.getElementById('password');
-const passwordDiv = document.getElementById('passwordDiv');
+const mappedEmail = document.getElementById('mappedEmail');
+const regards = document.getElementById('regards');
+const password = document.getElementById('password');
+const passwordContainer = document.getElementById('passwordContainer');
+const approvalEmailContainer = document.getElementById('approvalEmailContainer');
+const approvalEmail = document.getElementById('approvalEmail');
 const accountDetails = document.getElementById('accountDetails');
+const customerNameInput = document.getElementById('customerName');
 const form = document.getElementById('mailForm');
 const errorMsg = document.getElementById('errorMsg');
 const sendBtn = document.getElementById('sendMailBtn');
-const customerNameInput = document.getElementById('customerName');
+
+regards.addEventListener('change', ()=>{
+    if(passwordNames.includes(regards.value)){
+        passwordContainer.classList.remove('hidden');
+        approvalEmailContainer.classList.add('hidden');
+        approvalEmail.value = '';
+    } else if(approvalNames.includes(regards.value)){
+        passwordContainer.classList.add('hidden');
+        password.value = '';
+        approvalEmailContainer.classList.remove('hidden');
+    } else {
+        passwordContainer.classList.remove('hidden');
+        approvalEmailContainer.classList.add('hidden');
+    }
+});
+
+mailType.addEventListener('change', () => {
+  accountDetails.classList.toggle('hidden', mailType.value !== "Transfer of Surplus Amount To Customer");
+});
 
 branchNameInput.addEventListener('input', () => {
-  mappedEmailEl.value = branchEmails[branchNameInput.value] || '';
+  mappedEmail.value = branchEmails[branchNameInput.value] || '';
 });
 
 customerNameInput.addEventListener('input', () => {
-  const words = customerNameInput.value.split(' ').filter(Boolean).map(w => w[0]?.toUpperCase() + w.slice(1).toLowerCase());
+  let words = customerNameInput.value.split(' ');
+  words = words.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
   customerNameInput.value = words.join(' ');
 });
 
-regardsEl.addEventListener('change', () => {
-  const r = regardsEl.value;
-  // show password for direct-send group
-  if (directSendWithPassword.includes(r)) {
-    passwordDiv.style.display = 'block';
-  } else {
-    passwordDiv.style.display = 'none';
-    passwordEl.value = '';
-  }
-
-  // show bank/account section only for Transfer of Surplus AND when direct send (we require bank details only when direct send)
-  if (mailTypeEl.value === "Transfer of Surplus Amount To Customer" && directSendWithPassword.includes(r)) {
-    accountDetails.style.display = 'grid';
-  } else {
-    accountDetails.style.display = 'none';
-  }
-});
-
-mailTypeEl.addEventListener('change', () => {
-  // re-evaluate accountDetails visibility when mail type changes
-  const r = regardsEl.value;
-  if (mailTypeEl.value === "Transfer of Surplus Amount To Customer" && directSendWithPassword.includes(r)) {
-    accountDetails.style.display = 'grid';
-  } else {
-    accountDetails.style.display = 'none';
-  }
-});
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onload = () => resolve(reader.result.split(',')[1]);
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
@@ -267,7 +303,7 @@ function getEmailContent(data){
 </table>
 `;
 
-  if(data.mailType==="Transfer of Surplus Amount To Customer" && data.bankAccount){
+  if(data.mailType==="Transfer of Surplus Amount To Customer"){
     body += `
 <br>
 <b style="font-family:Arial, sans-serif; font-size:15px; color:#222;">Bank Details:</b><br><br>
@@ -294,108 +330,98 @@ function getEmailContent(data){
   return {subject, body};
 }
 
-/* === submit handler === */
-form.addEventListener('submit', async (ev) => {
-  ev.preventDefault();
-  errorMsg.style.display = 'none';
-  errorMsg.textContent = '';
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  errorMsg.textContent='';
 
-  // minimal required client-side validation
-  const requiredFields = ['mailType','glId','customerName','customerNumber','branchNameInput','mappedEmail','regards'];
-  for (const id of requiredFields) {
-    const el = document.getElementById(id === 'branchNameInput' ? 'branchNameInput' : id);
-    if (!el || !el.value || String(el.value).trim()==='') {
-      errorMsg.style.display = 'block';
-      errorMsg.textContent = `${id} is required`;
+  // Password validation if required
+  if(passwordContainer.classList.contains('hidden')===false && passwordNames.includes(regards.value)){
+    if(password.value!==regardsPasswords[regards.value]){
+      errorMsg.textContent="Incorrect password for selected Regards";
       return;
     }
   }
 
-  const regardsVal = regardsEl.value;
+  if(!accountDetails.classList.contains('hidden')){
+    const requiredFields=['bankAccount','bankName','ifsc','passbook'];
 
-  // password check client-side (for direct send group)
-  if (directSendWithPassword.includes(regardsVal)) {
-    if (!passwordEl.value || passwordEl.value !== regardsPasswords[regardsVal]) {
-      errorMsg.style.display = 'block';
-      errorMsg.textContent = "Password required or incorrect for selected Regards";
-      return;
+    for(const id of requiredFields){
+      if(id === "passbook"){
+        if(!document.getElementById(id).files.length){
+          errorMsg.textContent="All account details are mandatory";
+          return;
+        }
+      } else {
+        if(!document.getElementById(id).value){
+          errorMsg.textContent="All account details are mandatory";
+          return;
+        }
+      }
     }
   }
 
-  // build payload
-  const data = {
-    mailType: mailTypeEl.value,
-    glId: document.getElementById('glId').value,
-    customerName: customerNameInput.value,
-    customerNumber: document.getElementById('customerNumber').value,
-    branchName: branchNameInput.value,
-    mappedEmail: mappedEmailEl.value,
-    regards: regardsVal,
-    password: passwordEl.value || ''
-  };
-
-  // decide toEmail: direct send => mappedEmail, otherwise approval email
-  const needsApproval = !directSendWithPassword.includes(regardsVal);
-  data.toEmail = needsApproval ? (approvalEmails[regardsVal] || "") : data.mappedEmail;
-
-  // attach bank details & files (only required & sent when Transfer of Surplus AND direct send)
-  if (mailTypeEl.value === "Transfer of Surplus Amount To Customer" && !needsApproval) {
-    data.bankAccount = document.getElementById('bankAccount').value;
-    data.bankName = document.getElementById('bankName').value;
-    data.ifsc = document.getElementById('ifsc').value;
-
-    const passbookFile = document.getElementById('passbook').files[0];
-    if (passbookFile) {
-      data.passbook = await fileToBase64(passbookFile);
-      data.passbookType = passbookFile.type || 'application/pdf';
-    }
-    const aadharFile = document.getElementById('aadhar').files[0];
-    if (aadharFile) {
-      data.aadhar = await fileToBase64(aadharFile);
-      data.aadharType = aadharFile.type || 'application/pdf';
-    }
-    const panFile = document.getElementById('pan').files[0];
-    if (panFile) {
-      data.pan = await fileToBase64(panFile);
-      data.panType = panFile.type || 'application/pdf';
-    }
+  if(approvalEmailContainer.classList.contains('hidden')===false && !approvalEmail.value){
+    errorMsg.textContent="Please select Approval Email";
+    return;
   }
 
-  // produce subject & body for clarity (optional — Apps Script can also compute)
-  const emailContent = getEmailContent(data);
-  data.subject = emailContent.subject;
-  data.body = emailContent.body;
+  sendBtn.disabled=true; sendBtn.textContent="Sending...";
 
-  // POST to Apps Script
-  sendBtn.disabled = true;
-  sendBtn.textContent = 'Sending...';
+  try{
+    const data={
+      mailType: mailType.value,
+      glId: document.getElementById('glId').value,
+      customerName: customerNameInput.value,
+      customerNumber: document.getElementById('customerNumber').value,
+      branchName: branchNameInput.value,
+      mappedEmail: mappedEmail.value,
+      regards: regards.value,
+      password: password.value,
+      approvalEmail: approvalEmail.value
+    };
 
-  try {
-    const resp = await fetch(WEB_APP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+    if(!accountDetails.classList.contains('hidden')){
+      data.bankAccount=document.getElementById('bankAccount').value;
+      data.bankName=document.getElementById('bankName').value;
+      data.ifsc=document.getElementById('ifsc').value;
+
+      const passbookFile=document.getElementById('passbook').files[0];
+      if(passbookFile){
+        data.passbook=await fileToBase64(passbookFile);
+        data.passbookType=passbookFile.type;
+      }
+
+      const aadharFile=document.getElementById('aadhar').files[0];
+      if(aadharFile){
+        data.aadhar=await fileToBase64(aadharFile);
+        data.aadharType=aadharFile.type;
+      }
+
+      const panFile=document.getElementById('pan').files[0];
+      if(panFile){
+        data.pan=await fileToBase64(panFile);
+        data.panType=panFile.type;
+      }
+    }
+
+    const emailContent=getEmailContent(data);
+    data.subject=emailContent.subject;
+    data.body=emailContent.body;
+
+    const response=await fetch("https://script.google.com/macros/s/AKfycbySnNXdv6GWEBgV8YL3VXnx3xAFuetfuYqMFtUfezoUZnqGvAxYHybTBDdob1-IFXZT/exec", {
+      method:"POST",
+      body:JSON.stringify(data)
     });
+    const result=await response.json();
+    if(result.status==="success"){
+      alert("Mail sent successfully!");
+      form.reset(); mappedEmail.value=''; accountDetails.classList.add('hidden'); 
+      passwordContainer.classList.remove('hidden'); approvalEmailContainer.classList.add('hidden');
+    }else errorMsg.textContent=result.message;
 
-    const json = await resp.json();
-    if (json.status === 'success') {
-      // If it was approval workflow, server will auto-forward after approval (server behavior)
-      alert('Mail processed successfully.');
-      form.reset();
-      mappedEmailEl.value = '';
-      accountDetails.style.display = 'none';
-      passwordDiv.style.display = 'block';
-    } else {
-      errorMsg.style.display = 'block';
-      errorMsg.textContent = json.message || 'Server error';
-    }
-  } catch (err) {
-    errorMsg.style.display = 'block';
-    errorMsg.textContent = 'Failed to fetch / server error: ' + (err.message || err);
-  } finally {
-    sendBtn.disabled = false;
-    sendBtn.textContent = 'Send Mail';
-  }
+  }catch(err){errorMsg.textContent=err.message;}
+
+  sendBtn.disabled=false; sendBtn.textContent="Send Mail";
 });
 </script>
 </body>
