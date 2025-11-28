@@ -1,427 +1,334 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mail Sender</title>
+<meta charset="utf-8" />
+<title>Regards Mail Form (GitHub Frontend)</title>
 <style>
-  body { 
-    font-family: Arial, sans-serif; 
-    padding: 10px; 
-    background: #f4f6f9;
-  }
-  h2 {
-    text-align: center;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  form {
-    background-image: linear-gradient(to right,#ff4d00,#7d20cb);
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    max-width: 500px;
-    margin: auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 20px;
-  }
-  label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 3px;
-    color: #faf7f7;
-  }
-  input, select, button {
-    padding: 5px;
-    width: 100%;
-    border: 3px solid #ccc;
-    border-radius: 10px;
-    font-size: 12px;
-  }
-  input:focus, select:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0,123,255,0.4);
-  }
-  .hidden { display: none !important; }
-  #accountDetails {
-    grid-column: span 2;
-    background-image: linear-gradient(to right,#ff4d00,#7d20cb);
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    max-width: 500px;
-    margin: auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 20px;
-    padding: 15px;
-    border-radius: 8px;
-    border: 2px solid #ddd;
-  }
-  #accountDetails.visible {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 20px;
-  }
-  #accountDetails h3 { 
-    margin: 0 0 0.5px 0; 
-    grid-column: span 2; 
-    color: #000000; 
-  }
-  .error { color: red; grid-column: span 2; }
-  button {
-    background: #007bff;
-    color: white;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    grid-column: span 2;
-    transition: 0.3s;
-  }
-  button:hover { background: #0056b3; }
+  /* Minimal copy of your UI + overlay loader */
+  body{font-family:Arial;margin:0;background:#f4f6f9;display:flex;justify-content:center;padding:18px}
+  form{background:#fff;padding:22px;width:760px;border-radius:12px;box-shadow:0 6px 30px rgba(0,0,0,0.08)}
+  h2{font-size:20px;margin:0 0 12px;background:linear-gradient(90deg,#7d20cb,#ff4d00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+  .full{grid-column:span 2}
+  label{display:block;font-weight:600;margin-bottom:6px;color:#222}
+  input,select,textarea{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #d6dbe2;font-size:14px}
+  .drop-zone{border:2px dashed #7d20cb;border-radius:10px;padding:12px;text-align:center;cursor:pointer;background:#fbf7ff}
+  .preview-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+  .preview-box{border:1px solid #e6eaef;padding:8px;border-radius:8px;position:relative;background:#fff;text-align:center}
+  .delete-btn{position:absolute;top:6px;right:6px;background:#e74c3c;color:#fff;border:none;border-radius:4px;padding:4px 6px;cursor:pointer}
+  button{width:100%;padding:10px;border-radius:10px;border:none;background:linear-gradient(90deg,#ff4d00,#7d20cb);color:#fff;font-weight:700;cursor:pointer}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:none;align-items:center;justify-content:center;z-index:9999}
+  .loader-card{background:rgba(255,255,255,0.98);padding:18px 24px;border-radius:12px;display:flex;gap:12px;align-items:center}
+  .spinner{width:36px;height:36px;border-radius:50%;border:4px solid rgba(125,32,203,0.2);border-top-color:#7d20cb;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .small{font-size:13px;color:#666;margin-top:8px}
+  @media (max-width:760px){form{width:100%}.preview-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<h2>Branch Mail Sender</h2>
 <form id="mailForm">
-  <div>
-    <label for="mailType">Mail Type*</label>
-    <select id="mailType" required>
-      <option value="">Select Mail Type</option>
-      <option value="Packet Hold From The Auction">Packet Hold From The Auction</option>
-      <option value="Packet Availability Confirmation">Packet Availability Confirmation</option>
-      <option value="Customer Query For Auction Surplus">Customer Query For Auction Surplus</option>
-      <option value="Customer Query for Auction Details">Customer Query for Auction Details</option>
-      <option value="Handover the DD To The Customer">Handover the DD To The Customer</option>
-      <option value="Transfer of Surplus Amount To Customer">Transfer of Surplus Amount To Customer</option>
-    </select>
+  <h2>Regards Mail Form</h2>
+
+  <div class="grid">
+    <div>
+      <label>Mail Type*</label>
+      <select id="mailType" required>
+        <option value="">Select Mail Type</option>
+        <option>Packet Hold From The Auction</option>
+        <option>Packet Availability Confirmation</option>
+        <option>Customer Query For Auction Surplus</option>
+        <option>Customer Query for Auction Details</option>
+        <option>Handover the DD To The Customer</option>
+        <option>Transfer of Surplus Amount To Customer</option>
+      </select>
+    </div>
+
+    <div>
+      <label>GL ID*</label>
+      <input id="glId" required />
+    </div>
+
+    <div>
+      <label>Customer Name*</label>
+      <input id="customerName" required />
+    </div>
+
+    <div>
+      <label>Customer Number*</label>
+      <input id="customerNumber" required />
+    </div>
+
+    <div>
+      <label>Branch Name*</label>
+      <select id="branchName" required>
+        <option value="">Select Branch</option>
+        <option>Test</option>
+        <option>Fed - BANGALORE / ST. MARKS ROAD</option>
+        <option>Fed - BANGALORE / GANDHI NAGAR</option>
+        <option>Fed - BANGALORE / RAJAJI NAGAR</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Branch Email</label>
+      <input id="branchEmail" readonly />
+    </div>
+
+    <div>
+      <label>Regards*</label>
+      <select id="regards" required>
+        <option value="">--Select Name--</option>
+        <option>Vijay</option><option>Manasa</option><option>Yatish</option>
+        <option>Arif</option><option>Kartik</option><option>Rajendra</option>
+        <option>Prashanth</option><option>Vidyadhar</option>
+        <option>Fouziya</option><option>Krishnaveni</option><option>Margaret</option>
+        <option>Azmath</option><option>Nageena</option><option>Sana</option>
+        <option>Asha</option><option>Eram</option><option>Archana</option>
+      </select>
+    </div>
+
+    <div id="inputContainer" class="full"></div>
+
+    <!-- Bank details shown only for Transfer -->
+    <div id="accountDetails" class="full" style="display:none">
+      <div style="font-weight:700;margin-bottom:8px">Bank Details (required for Transfer)</div>
+      <div class="grid">
+        <div>
+          <label>Account Holder Name*</label>
+          <input id="accountHolder" />
+        </div>
+        <div>
+          <label>Bank Name*</label>
+          <input id="bankName" />
+        </div>
+        <div>
+          <label>Branch Name*</label>
+          <input id="branchBankName" />
+        </div>
+        <div>
+          <label>Account Number*</label>
+          <input id="accountNumber" />
+        </div>
+        <div>
+          <label>Confirm Account Number*</label>
+          <input id="confirmAccountNumber" />
+        </div>
+        <div>
+          <label>IFSC Code*</label>
+          <input id="ifsc" />
+        </div>
+
+        <div class="full">
+          <label>Bank Address (optional)</label>
+          <input id="bankAddress" />
+        </div>
+        <div class="full">
+          <label>Customer ID / CIF (optional)</label>
+          <input id="customerId" />
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label class="small">Attachments (required for Transfer) — Max 4</label>
+        <div class="drop-zone" id="dropZone">Click or drag files here</div>
+        <input id="fileInput" type="file" multiple style="display:none" />
+        <div id="previewContainer" class="preview-grid"></div>
+      </div>
+    </div>
   </div>
 
-  <div>
-    <label for="glId">GL ID*</label>
-    <input type="text" id="glId" pattern="\d+" required placeholder="Enter GL ID (numbers only)">
+  <div style="margin-top:14px">
+    <button id="submitBtn" type="submit">Submit</button>
   </div>
 
-  <div>
-    <label for="customerName">Customer Name*</label>
-    <input type="text" id="customerName" pattern="[A-Za-z\s]+" required placeholder="Enter Customer Name">
-  </div>
-
-  <div>
-    <label for="customerNumber">Customer Number*</label>
-    <input type="text" id="customerNumber" pattern="\d+" required placeholder="Enter Customer Number">
-  </div>
-
-  <div>
-    <label for="branchNameInput">Branch Name*</label>
-    <input list="branchList" id="branchNameInput" required placeholder="Select or type branch">
-    <datalist id="branchList">
-      <option value="Test">
-      <option value="Fed - Pune /Phursungi">
-    </datalist>
-  </div>
-
-  <div>
-    <label for="mappedEmail">Mapped Email*</label>
-    <input type="email" id="mappedEmail" readonly required placeholder="Mapped Email">
-  </div>
-
-  <div>
-    <label for="regards">Regards*</label>
-    <select id="regards" required>
-      <option value="">Select</option>
-      <option value="Test">Test</option>
-      <option value="Karthik">Karthik</option>
-      <option value="Yatish">Yatish</option>
-      <option value="Arif">Arif</option>
-      <option value="Manasa">Manasa</option>
-      <option value="Vijay">Vijay</option>
-      <option value="Margaret">Margaret</option>
-      <option value="Rajendra">Rajendra</option>
-      <option value="Prashanth">Prashanth</option>
-      <option value="Vidyadhar">Vidyadhar</option>
-      <option value="Fouziya">Fouziya</option>
-      <option value="Krishnaveni">Krishnaveni</option>
-      <option value="Azmath">Azmath</option>
-      <option value="Nageena">Nageena</option>
-      <option value="Sana">Sana</option>
-      <option value="Asha">Asha</option>
-      <option value="Eram">Eram</option>
-    </select>
-  </div>
-
-  <div id="passwordContainer">
-    <label for="password">Password*</label>
-    <input type="password" id="password" required placeholder="Enter Password">
-  </div>
-
-  <div id="approvalEmailContainer" class="hidden">
-    <label for="approvalEmail">Approval Email*</label>
-    <select id="approvalEmail">
-      <option value="">Select Approval Email</option>
-      <option value="arif.pasha@rupeek.com">arif.pasha@rupeek.com</option>
-      <option value="yatish.r@rupeek.com">yatish.r@rupeek.com</option>
-      <option value="m.manasa@rupeek.com">m.manasa@rupeek.com</option>
-      <option value="vijay.r01@rupeek.com">vijay.r01@rupeek.com</option>
-    </select>
-  </div>
-
-  <div id="accountDetails" class="hidden">
-    <label for="bankAccount">Bank A/C Number*</label>
-    <input type="text" id="bankAccount">
-
-    <label for="bankName">Bank Name*</label>
-    <input type="text" id="bankName">
-
-    <label for="ifsc">IFSC Code*</label>
-    <input type="text" id="ifsc">
-
-    <label for="passbook">Passbook / Cheque Leaf*</label>
-    <input type="file" id="passbook">
-
-    <label for="aadhar">Aadhar Card (optional)</label>
-    <input type="file" id="aadhar">
-
-    <label for="pan">Pan Card (optional)</label>
-    <input type="file" id="pan">
-  </div>
-
-  <div class="error" id="errorMsg"></div>
-  <button type="submit" id="sendMailBtn">Send Mail</button>
+  <div id="message" class="small"></div>
 </form>
 
+<!-- Overlay loader -->
+<div id="overlay" class="overlay">
+  <div class="loader-card">
+    <div class="spinner" aria-hidden="true"></div>
+    <div>
+      <div style="font-weight:700">Processing…</div>
+      <div style="font-size:13px;color:#555;margin-top:4px">Please do not close this window.</div>
+    </div>
+  </div>
+</div>
+
 <script>
-const branchEmails = {"Test":"vidyadhar.patil@rupeek.com","Fed - Pune / Pimple Saudagar":"pnei@federalbank.co.in"};
+/* ====== CONFIG ====== */
+// replace with your Apps Script web app URL (deployed)
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwfo5o7_zD5exAhIk_eojdMsMiJeEqupMhjar9LU5EAErZwJ_wMTCpw2LKYCLfwBAQA/exec";
 
-const regardsPasswords = {"Test":"August@2025","Karthik":"A7d9X","Yatish":"m3Pq2","Arif":"Z5yL0","Manasa":"t9Bv4","Rajendra":"R2hK8","Prashanth":"c7Nw1","Vijay":"F6gQ3","Margaret":"M6TQ3","Vidyadhar":"3834" };
+/* ====== UI & logic (same as before) ====== */
+const group1 = ["Vijay","Manasa","Yatish","Arif","Kartik","Rajendra","Prashanth","Vidyadhar"];
+const group2 = ["Fouziya","Krishnaveni","Margaret","Azmath","Nageena","Sana","Asha","Eram","Archana"];
+const group2Emails = ["vidyadhar.patil@rupeek.com","yatish.r@rupeek.com","m.manasa@rupeek.com","vijay.r01@rupeek.com"];
+const branchEmailMap = {
+  "Test":"vidyadhar.patil@rupeek.com",
+  "Fed - BANGALORE / ST. MARKS ROAD":"bgra@federalbank.co.in",
+  "Fed - BANGALORE / GANDHI NAGAR":"bgrb@federalbank.co.in",
+  "Fed - BANGALORE / RAJAJI NAGAR":"bgrd@federalbank.co.in"
+};
 
-const passwordNames = ["Vijay","Manasa","Yatish","Arif","Karthik","Rajendra","Prashanth","Vidyadhar"];
-const approvalNames = ["Fouziya","Krishnaveni","Margaret","Azmath","Nageena","Sana","Asha","Eram"];
+let currentGroup = null;
+let selectedFiles = [];
 
-const mailType = document.getElementById('mailType');
-const branchNameInput = document.getElementById('branchNameInput');
-const mappedEmail = document.getElementById('mappedEmail');
-const regards = document.getElementById('regards');
-const password = document.getElementById('password');
-const passwordContainer = document.getElementById('passwordContainer');
-const approvalEmailContainer = document.getElementById('approvalEmailContainer');
-const approvalEmail = document.getElementById('approvalEmail');
-const accountDetails = document.getElementById('accountDetails');
-const customerNameInput = document.getElementById('customerName');
-const form = document.getElementById('mailForm');
-const errorMsg = document.getElementById('errorMsg');
-const sendBtn = document.getElementById('sendMailBtn');
+const regardsSelect = document.getElementById('regards');
+const inputContainer = document.getElementById('inputContainer');
+const branchSelect = document.getElementById('branchName');
+const branchEmailInput = document.getElementById('branchEmail');
+const mailTypeSelect = document.getElementById('mailType');
+const accountDetailsDiv = document.getElementById('accountDetails');
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const previewContainer = document.getElementById('previewContainer');
+const submitBtn = document.getElementById('submitBtn');
+const overlay = document.getElementById('overlay');
+const messageDiv = document.getElementById('message');
 
-regards.addEventListener('change', ()=>{
-    if(passwordNames.includes(regards.value)){
-        passwordContainer.classList.remove('hidden');
-        approvalEmailContainer.classList.add('hidden');
-        approvalEmail.value = '';
-    } else if(approvalNames.includes(regards.value)){
-        passwordContainer.classList.add('hidden');
-        password.value = '';
-        approvalEmailContainer.classList.remove('hidden');
-    } else {
-        passwordContainer.classList.remove('hidden');
-        approvalEmailContainer.classList.add('hidden');
-    }
+regardsSelect.addEventListener('change', () => {
+  inputContainer.innerHTML = '';
+  const s = regardsSelect.value;
+  if (group1.includes(s)) {
+    currentGroup = 'group1';
+    inputContainer.innerHTML = `<label>Password</label><input id="password" type="password" />`;
+  } else if (group2.includes(s)) {
+    currentGroup = 'group2';
+    let html = `<label>Select Approver Email</label><select id="group2Email"><option value="">--Select--</option>`;
+    group2Emails.forEach(e => html += `<option value="${e}">${e}</option>`);
+    html += `</select>`;
+    inputContainer.innerHTML = html;
+  } else {
+    currentGroup = null;
+  }
 });
 
-mailType.addEventListener('change', () => {
-  accountDetails.classList.toggle('hidden', mailType.value !== "Transfer of Surplus Amount To Customer");
+branchSelect.addEventListener('change', () => {
+  branchEmailInput.value = branchEmailMap[branchSelect.value] || '';
 });
 
-branchNameInput.addEventListener('input', () => {
-  mappedEmail.value = branchEmails[branchNameInput.value] || '';
+mailTypeSelect.addEventListener('change', () => {
+  if (mailTypeSelect.value === "Transfer of Surplus Amount To Customer") accountDetailsDiv.style.display = 'block';
+  else accountDetailsDiv.style.display = 'none';
 });
 
-customerNameInput.addEventListener('input', () => {
-  let words = customerNameInput.value.split(' ');
-  words = words.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
-  customerNameInput.value = words.join(' ');
-});
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.background = '#f1e6ff'; });
+dropZone.addEventListener('dragleave', () => { dropZone.style.background = '#fbf7ff'; });
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.background = '#fbf7ff'; handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', () => handleFiles(fileInput.files));
 
-function fileToBase64(file){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+function handleFiles(files) {
+  if (!files) return;
+  if (selectedFiles.length + files.length > 4) { alert('Maximum 4 files allowed'); return; }
+  for (let f of files) selectedFiles.push(f);
+  renderPreviews();
+}
+function deleteFile(i) { selectedFiles.splice(i,1); renderPreviews(); }
+function renderPreviews(){
+  previewContainer.innerHTML = '';
+  selectedFiles.forEach((file,idx) => {
+    const box = document.createElement('div'); box.className='preview-box';
+    const del = document.createElement('button'); del.className='delete-btn'; del.innerText='X'; del.onclick=()=>deleteFile(idx);
+    box.appendChild(del);
+    if (file.type && file.type.indexOf('image')!==-1) { const img=document.createElement('img'); img.src=URL.createObjectURL(file); box.appendChild(img); }
+    const nm = document.createElement('div'); nm.innerText = file.name; box.appendChild(nm);
+    previewContainer.appendChild(box);
   });
 }
 
-function getEmailContent(data){
-  let subject='', body=`Dear Branch Staff,<br><br>`;
-  switch(data.mailType){
-    case "Packet Hold From The Auction":
-      subject=`Hold The Packet From The Auction ${data.glId}-${data.customerName}`;
-      body+=`Kindly hold the packet from the auction, as the customer is willing to do the payment<br><br>`;
-      break;
-    case "Packet Availability Confirmation":
-      subject=`Packet Availability Confirmation ${data.glId}-${data.customerName}`;
-      body+=`Kindly confirm the packet availability status for below mentioned customer, and the customer is willing to do the payment<br><br>`;
-      break;
-    case "Customer Query for Auction Details":
-      subject=`Customer Query for Auction Details ${data.glId}-${data.customerName}`;
-      body+=`Customer has reached out to us requesting the gold auction details. You are requested to kindly furnish the auction details for the information of customer <br>Please find the customer details below.<br><br>`;
-      break;
-    case "Customer Query For Auction Surplus":
-      subject=`Customer Query For Auction Surplus ${data.glId}-${data.customerName}`;
-      body+=`Customer ${data.customerName} has requested details of the auction surplus (if any). You are kindly requested to furnish the surplus details for the customer’s information.<br>Please find the customer details below.<br><br>`;
-      break;
-    case "Transfer of Surplus Amount To Customer":
-      subject=`Transfer of Surplus Amount To Customer ${data.glId}-${data.customerName}`;
-      body+=`Customer has reached out to us requesting the transfer of the surplus amount. You are requested to confirm the same at the earliest.<br>Please find the customer details below.<br><br>`;
-      break;
-    case "Handover the DD To The Customer":
-      subject=`Handover the DD To The Customer ${data.glId}-${data.customerName}`;
-      body+=` Customer has reached out to us requesting for the available DD, Kindly Handover to the customer. <br>Details are provided below.<br><br>`;
-      break;
-  }
+// helper overlay
+function startLoading(){ submitBtn.disabled=true; overlay.style.display='flex'; }
+function stopLoading(){ submitBtn.disabled=false; overlay.style.display='none'; }
 
-  body += `
-<table style="width:100%; max-width:600px; border-collapse:collapse; font-family:Arial, sans-serif; font-size:14px; color:#333;">
-  <tr>
-    <td style="background:#f4f6f9; font-weight:bold; padding:8px; border:1px solid #ddd; width:35%;">GL ID</td>
-    <td style="padding:8px; border:1px solid #ddd;">${data.glId}</td>
-  </tr>
-  <tr>
-    <td style="background:#f4f6f9; font-weight:bold; padding:8px; border:1px solid #ddd;">Customer Name</td>
-    <td style="padding:8px; border:1px solid #ddd;">${data.customerName}</td>
-  </tr>
-  <tr>
-    <td style="background:#f4f6f9; font-weight:bold; padding:8px; border:1px solid #ddd;">Customer Number</td>
-    <td style="padding:8px; border:1px solid #ddd;">${data.customerNumber}</td>
-  </tr>
-  <tr>
-    <td style="background:#f4f6f9; font-weight:bold; padding:8px; border:1px solid #ddd;">Branch Name</td>
-    <td style="padding:8px; border:1px solid #ddd;">${data.branchName}</td>
-  </tr>
-</table>
-`;
+// submit
+document.getElementById('mailForm').addEventListener('submit', function(ev){
+  ev.preventDefault();
+  messageDiv.style.color = '#c0392b';
+  messageDiv.innerText = '';
 
-  if(data.mailType==="Transfer of Surplus Amount To Customer"){
-    body += `
-<br>
-<b style="font-family:Arial, sans-serif; font-size:15px; color:#222;">Bank Details:</b><br><br>
-<table style="width:100%; max-width:600px; border-collapse:collapse; font-family:Arial, sans-serif; font-size:14px; color:#333;">
-  <tr>
-    <td style="background:#f4f6f9; font-weight:bold; padding:8px; border:1px solid #ddd; width:35%;">Bank A/C Number</td>
-    <td style="padding:8px; border:1px solid #ddd;">${data.bankAccount}</td>
-  </tr>
-  <tr>
-    <td style="background:#f4f6f9; font-weight:bold; padding:8px; border:1px solid #ddd;">Bank Name</td>
-    <td style="padding:8px; border:1px solid #ddd;">${data.bankName}</td>
-  </tr>
-  <tr>
-    <td style="background:#f4f6f9; font-weight:bold; padding:8px; border:1px solid #ddd;">IFSC Code</td>
-    <td style="padding:8px; border:1px solid #ddd;">${data.ifsc}</td>
-  </tr>
-</table>
-<br>
-<i style="font-family:Arial, sans-serif; font-size:13px; color:#555;">Supporting documents attached.</i><br>
-`;
-  }
+  // collect fields
+  const data = {
+    mailType: document.getElementById('mailType').value,
+    regards: document.getElementById('regards').value,
+    branchEmail: document.getElementById('branchEmail').value,
+    glId: document.getElementById('glId').value.trim(),
+    customerName: document.getElementById('customerName').value.trim(),
+    customerNumber: document.getElementById('customerNumber').value.trim(),
+    branchName: document.getElementById('branchName').value
+  };
 
-  body+=`<br><br>Regards,<br>${data.regards}`;
-  return {subject, body};
-}
+  // bank details
+  data.accountHolder = document.getElementById('accountHolder').value.trim();
+  data.bankName = document.getElementById('bankName').value.trim();
+  data.branchBankName = document.getElementById('branchBankName').value.trim();
+  data.accountNumber = document.getElementById('accountNumber').value.trim();
+  data.confirmAccountNumber = document.getElementById('confirmAccountNumber').value.trim();
+  data.ifsc = document.getElementById('ifsc').value.trim();
+  data.bankAddress = document.getElementById('bankAddress').value.trim();
+  data.customerId = document.getElementById('customerId').value.trim();
 
-form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  errorMsg.textContent='';
+  // group fields
+  if (currentGroup === 'group1') data.password = document.getElementById('password')?.value || '';
+  if (currentGroup === 'group2') data.group2Email = document.getElementById('group2Email')?.value || '';
 
-  // Password validation if required
-  if(passwordContainer.classList.contains('hidden')===false && passwordNames.includes(regards.value)){
-    if(password.value!==regardsPasswords[regards.value]){
-      errorMsg.textContent="Incorrect password for selected Regards";
-      return;
-    }
-  }
-
-  if(!accountDetails.classList.contains('hidden')){
-    const requiredFields=['bankAccount','bankName','ifsc','passbook'];
-
-    for(const id of requiredFields){
-      if(id === "passbook"){
-        if(!document.getElementById(id).files.length){
-          errorMsg.textContent="All account details are mandatory";
-          return;
-        }
-      } else {
-        if(!document.getElementById(id).value){
-          errorMsg.textContent="All account details are mandatory";
-          return;
-        }
-      }
-    }
-  }
-
-  if(approvalEmailContainer.classList.contains('hidden')===false && !approvalEmail.value){
-    errorMsg.textContent="Please select Approval Email";
+  // basic validation
+  if (!data.mailType || !data.regards || !data.glId || !data.customerName || !data.customerNumber || !data.branchName) {
+    messageDiv.innerText = 'Please fill required fields.';
     return;
   }
 
-  sendBtn.disabled=true; sendBtn.textContent="Sending...";
-
-  try{
-    const data={
-      mailType: mailType.value,
-      glId: document.getElementById('glId').value,
-      customerName: customerNameInput.value,
-      customerNumber: document.getElementById('customerNumber').value,
-      branchName: branchNameInput.value,
-      mappedEmail: mappedEmail.value,
-      regards: regards.value,
-      password: password.value,
-      approvalEmail: approvalEmail.value
-    };
-
-    if(!accountDetails.classList.contains('hidden')){
-      data.bankAccount=document.getElementById('bankAccount').value;
-      data.bankName=document.getElementById('bankName').value;
-      data.ifsc=document.getElementById('ifsc').value;
-
-      const passbookFile=document.getElementById('passbook').files[0];
-      if(passbookFile){
-        data.passbook=await fileToBase64(passbookFile);
-        data.passbookType=passbookFile.type;
-      }
-
-      const aadharFile=document.getElementById('aadhar').files[0];
-      if(aadharFile){
-        data.aadhar=await fileToBase64(aadharFile);
-        data.aadharType=aadharFile.type;
-      }
-
-      const panFile=document.getElementById('pan').files[0];
-      if(panFile){
-        data.pan=await fileToBase64(panFile);
-        data.panType=panFile.type;
-      }
+  if (data.mailType === "Transfer of Surplus Amount To Customer") {
+    if (!data.accountHolder || !data.bankName || !data.branchBankName || !data.accountNumber || !data.confirmAccountNumber || !data.ifsc) {
+      messageDiv.innerText = 'Please fill mandatory bank details.';
+      return;
     }
+    if (data.accountNumber !== data.confirmAccountNumber) {
+      messageDiv.innerText = 'Account number mismatch.';
+      return;
+    }
+    if (selectedFiles.length === 0) { messageDiv.innerText = 'Please attach at least one file.'; return; }
+  }
 
-    const emailContent=getEmailContent(data);
-    data.subject=emailContent.subject;
-    data.body=emailContent.body;
+  // prepare attachments as base64 array
+  const promises = selectedFiles.map(f => new Promise((res,rej) => {
+    const reader = new FileReader();
+    reader.onload = () => res({ name: f.name, content: reader.result.split(',')[1], mime: f.type || 'application/octet-stream' });
+    reader.onerror = rej;
+    reader.readAsDataURL(f);
+  }));
 
-    const response=await fetch("https://script.google.com/macros/s/AKfycby32T1MDQKpp_ZM5begUtKESTGKGNsCI4Iaw33n49D64h_pDIe9WlZlP1nl8tq6PEuD/exec", {
-      method:"POST",
-      body:JSON.stringify(data)
+  startLoading();
+  Promise.all(promises).then(attachments => {
+    data.attachments = attachments;
+    // send to Apps Script (doPost)
+    fetch(WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+      credentials: 'omit'
+    }).then(r => r.json()).then(resp => {
+      stopLoading();
+      if (resp && resp.success) {
+        messageDiv.style.color = '#0a7a11';
+        messageDiv.innerText = resp.message || 'Success';
+        setTimeout(()=>location.reload(),900);
+      } else {
+        messageDiv.style.color = '#c0392b';
+        messageDiv.innerText = resp && resp.message ? resp.message : 'Error sending';
+      }
+    }).catch(err => {
+      stopLoading();
+      messageDiv.style.color = '#c0392b';
+      messageDiv.innerText = 'Network/Server error: ' + err.message;
     });
-    const result=await response.json();
-    if(result.status==="success"){
-      alert("Mail sent successfully!");
-      form.reset(); mappedEmail.value=''; accountDetails.classList.add('hidden'); 
-      passwordContainer.classList.remove('hidden'); approvalEmailContainer.classList.add('hidden');
-    }else errorMsg.textContent=result.message;
-
-  }catch(err){errorMsg.textContent=err.message;}
-
-  sendBtn.disabled=false; sendBtn.textContent="Send Mail";
+  }).catch(err => {
+    stopLoading();
+    messageDiv.style.color = '#c0392b';
+    messageDiv.innerText = 'File read error: ' + err.message;
+  });
 });
 </script>
 </body>
